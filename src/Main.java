@@ -33,20 +33,21 @@ public class Main {
         System.out.println("3. Exit.");
 
         boolean repeat;
+        // Laver en do while løkke som kører igennem, sådan hvis man skriver noget forkert, så lukker programmet ikke ned, men kører videre.
         do {
             repeat = false;
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            String choice = scanner.nextLine();
+
             // Her bliver der lavet en simpel switch case hvor bruger vælger om de vil logge ind eller lave en bruger
             switch (choice) {
-                case 1:
+                case "1":
                     accountCreate();
                     loginAccount(tid, dato, formatter);
                     break;
-                case 2:
+                case "2":
                     loginAccount(tid, dato, formatter);
                     break;
-                case 3:
+                case "3":
                     System.out.println("System lukker ned.");
                     scanner.close();
                     break;
@@ -58,13 +59,12 @@ public class Main {
     }
 
     public static void accountCreate() {
-        String username = "";
-        String password = "";
+
         // Bruger opretter et brugernavn og et kodeord
         System.out.println("Indtast nyt brugernavn.");
-        username = scanner.nextLine();
+        String username = scanner.nextLine();
         System.out.println("Indtast nyt password.");
-        password = scanner.nextLine();
+        String password = scanner.nextLine();
         // Her bliver brugerens indtastede username gemt i ArrayListen usernames
         usernames.add(username);
         // Her bliver brugerens indtaste password gemt i ArrayListen passwords
@@ -88,8 +88,8 @@ public class Main {
             int index = usernames.indexOf(username); // initaliserer index som får ArrayListen usernames index af String username
 
             //Her tjekker vi om index ikke er lig med -1 og password er lig med datatypen Arraylist passwords hvor vi tjekker om indexet
-            // passer med password i ArrayListen passwords. Index ville give -1 hvis den ikke findes og ved derfor gå ned i else if
-            // og sige brugeren ikke findes
+            // passer med password i ArrayListen passwords. Index ville give -1 hvis den ikke findes og ved derfor gå ned i if
+            // og sige brugeren ikke findes. I else if tjekker vi om password er forkert og hvis det er udskriver den og adder et forsøg
             if (index != -1 && password.equals(passwords.get(index))) {
                 wrongPassword = true;
                 System.out.println("Login succesfuldt. Du blev logget ind klokken " + tid + " den " + dato.format(formatter) + ".");
