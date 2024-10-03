@@ -1,81 +1,109 @@
 import java.util.Scanner;
 import java.util.ArrayList;
-
-public class Main
-{
-    // Laver en scanner som kan blive brugt, sådan at man ikke laver flere scannere undervejs, da det kan skabe problemer
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+public class Main {
+    // Laver en scanner som kan blive brugt overalt så man undgår at skabe flere scannere undervejs hvilket kan skabe problemer
     public static final Scanner scanner = new Scanner(System.in);
-    // Laver en ArrayList som bliver kaldt usernames. Den gemmer alle burgernavne i den
+
+    // Laver en ArrayList til usernames og en til passwords
     private static final ArrayList usernames = new ArrayList();
-    // Laver en ArrayList som bliver kaldt passwords. Den gemmer alle password i den
     private static final ArrayList passwords = new ArrayList();
-    public static void main(String[] args)
-    {
 
-        System.out.println("1. Lav account");
-        System.out.println("2. Login");
-        int choice = scanner.nextInt();
-        // Her bliver der lavet en simpel switch case hvor bruger vælger hvad de vil om de vil lave en account eller login
-        switch (choice)
-        {
-            case 1:
-                accountCreate();
-                loginAccount();
-                break;
-            case 2:
-                loginAccount();
-                break;
-        }
+    public static void main(String[] args) {
+
+        LocalTime tid = LocalTime.now().truncatedTo(ChronoUnit.SECONDS); // gør så tiden bliver vist i sekunder
+        LocalDate dato = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy"); // retter format fra mm-dd-yyyy til dd-mm-yyyy
+
+        // Tilføjer navne og passwords til den ArrayList de hører til i
+        usernames.add("admin");
+        usernames.add("user1");
+        usernames.add("user2");
+        passwords.add("password123");
+        passwords.add("letmein");
+        passwords.add("qwerty");
+
+        // Printer velkomstbesked og brugerens valgmuligheder
+        System.out.println("Velkommen. Klokken er " + tid + ". Vælg en mulighed.");
+        System.out.println("1. Lav ny bruger.");
+        System.out.println("2. Login.");
+        System.out.println("3. Exit.");
+
+        boolean repeat;
+        do {
+            repeat = false;
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            // Her bliver der lavet en simpel switch case hvor bruger vælger om de vil logge ind eller lave en bruger
+            switch (choice) {
+                case 1:
+                    accountCreate();
+                    loginAccount(tid, dato, formatter);
+                    break;
+                case 2:
+                    loginAccount(tid, dato, formatter);
+                    break;
+                case 3:
+                    System.out.println("System lukker ned.");
+                    scanner.close();
+                    break;
+                default:
+                    System.out.println("Ugyldigt valg. Prøv igen.");
+                    repeat = true;
+            }
+        } while (repeat);
     }
 
-    public static void accountCreate()
-    {
-        // Laver en nextLine, sådan at man først skal skrive brugernavn og derefter password ellers ville begge sout komme frem.
-        scanner.nextLine();
-        // Bruger laver et brugernavn og kodeord
-        System.out.println("Lav dit username");
-        String username = scanner.nextLine();
-        System.out.println("Lav dit password");
-        String password = scanner.nextLine();
-        // Her bliver username gemt i arraylisten usernames
+    public static void accountCreate() {
+        String username = "";
+        String password = "";
+        // Bruger opretter et brugernavn og et kodeord
+        System.out.println("Indtast nyt brugernavn.");
+        username = scanner.nextLine();
+        System.out.println("Indtast nyt password.");
+        password = scanner.nextLine();
+        // Her bliver brugerens indtastede username gemt i ArrayListen usernames
         usernames.add(username);
-        // Her bliver password gmet i arraylisten passwords
+        // Her bliver brugerens indtaste password gemt i ArrayListen passwords
         passwords.add(password);
-
-
     }
 
-    public static void loginAccount()
-    {
+    public static void loginAccount(LocalTime tid, LocalDate dato, DateTimeFormatter formatter) {
 
-        // laver datatypen int som bliver kaldt tries. Den skal holde styr på hvor mange forsøg man bruger
+
+        // Laver datatypen int som bliver kaldt tries. Den skal holde styr på hvor mange forsøg man bruger
         int tries = 0;
-        // laver datatypen boolean skal bliver kaldt wrongPassword. Den tjekker om det forkert
+        // Laver datatypen boolean skal bliver kaldt wrongPassword
         boolean wrongPassword = false;
-        // kører while loopet indtil bruger skriver det rigtigt password eller har brugt 3 forsøg
+        // kører while loopet indtil bruger skriver det rigtige password eller har brugt 3 forsøg
         while(!wrongPassword && tries < 3) {
-            System.out.println("Skriv dit username");
+            System.out.println("Indtast brugernavn.");
             String username = scanner.nextLine();
-            System.out.println("Skriv dit password");
+            System.out.println("Indtast password.");
             String password = scanner.nextLine();
-            // Her laver jeg en datatype int som jeg kalder index, hvor jeg får arraylisten usernames index af datatypen String username
-            int index = usernames.indexOf(username);
+
+            int index = usernames.indexOf(username); // initaliserer index som får ArrayListen usernames index af String username
+
             //Her tjekker vi om index ikke er lig med -1 og password er lig med datatypen Arraylist passwords hvor vi tjekker om indexet
-            // passer med password i arraylisten passwords. index ville give -1 hvis den ikke findes og ved derfor gå ned i else if
+            // passer med password i ArrayListen passwords. Index ville give -1 hvis den ikke findes og ved derfor gå ned i else if
             // og sige brugeren ikke findes
             if (index != -1 && password.equals(passwords.get(index))) {
                 wrongPassword = true;
-                System.out.println("Du er logget ind");
-            } else if (index == -1) {
-                System.out.println("Brugeren findes ikke ");
-            } else {
+                System.out.println("Login succesfuldt. Du blev logget ind klokken " + tid + " den " + dato.format(formatter) + ".");
+            } else if (index != -1 && !password.equals(passwords.get(index))) {
                 tries++;
                 System.out.println("Forkert brugernavn eller password: " + (3 - tries) + " forsøg tilbage");
             }
+            if (index == -1)
+            {
+                System.out.println("Brugeren findes ikke");
+            }
         }
-        if (!wrongPassword)
-        {
-            System.out.println("Du har brugt alle forsøg");
+        if (!wrongPassword) {
+            System.out.println("Du har brugt alle forsøg. Programmet lukker.");
         }
     }
 }
